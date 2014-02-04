@@ -87,6 +87,33 @@ test("slice supports negative index arguments", function() {
 
 });
 
+test("indexOf works as expected for simple values", function() {
+  var obj = {a:1, b:2};
+  var testArray = new TestArray(['a', 7, obj]);
+
+  equal(testArray.indexOf('a'), 0, 'indexOf string');
+  equal(testArray.indexOf(7), 1, 'indexOf number');
+  equal(testArray.indexOf(obj), 2, 'indexOf object reference');
+  equal(testArray.indexOf({a:1, b:2}), -1, 'indexOf non-matching object');
+  equal(testArray.indexOf('blah'), -1, 'indexOf non-matching string');
+});
+
+test("indexOf respects isEqual on objects", function() {
+  var Klass = Ember.Object.extend({
+    isEqual: function(o) {
+      return this.get('a') === o.get('a');
+    }
+  });
+
+  var testArray = new TestArray([Klass.create({a:1}),
+                                 Klass.create({a:2}),
+                                 Klass.create({a:3})]);
+
+  var testObj = Klass.create({a:2});
+
+  equal(testArray.indexOf(testObj), 1, 'indexOf object with custom isEqual');
+});
+
 // ..........................................................
 // CONTENT DID CHANGE
 //
